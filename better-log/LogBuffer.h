@@ -5,22 +5,31 @@
 #include <ostream>
 #include <cstring>
 
-#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+/*
+ * Some ugly MACROS to have pretty output with line number and file and
+ * function names.
+ */
+#define __FILENAME__ (strrchr(__FILE__, '/') ?\
+		strrchr(__FILE__, '/') + 1 : __FILE__)
 #ifdef DEBUG
 #ifndef DBG
-#define DBG stafseasq::log::LogBuffer::Properties({ stafseasq::log::debug, __LINE__, __FILENAME__, __FUNCTION__})
+#define DBG stafseasq::log::LogBuffer::Properties({\
+		stafseasq::log::debug, __LINE__, __FILENAME__, __FUNCTION__})
 #endif
 #else
 #define DBG
 #endif
 #ifndef INFO
-#define INFO stafseasq::log::LogBuffer::Properties({ stafseasq::log::info, __LINE__, __FILENAME__, __FUNCTION__})
+#define INFO stafseasq::log::LogBuffer::Properties({\
+		stafseasq::log::info, __LINE__, __FILENAME__, __FUNCTION__})
 #endif
 #ifndef WARN
-#define WARN stafseasq::log::LogBuffer::Properties({ stafseasq::log::warn, __LINE__, __FILENAME__, __FUNCTION__})
+#define WARN stafseasq::log::LogBuffer::Properties({\
+		stafseasq::log::warn, __LINE__, __FILENAME__, __FUNCTION__})
 #endif
 #ifndef ERROR
-#define ERROR stafseasq::log::LogBuffer::Properties({ stafseasq::log::error, __LINE__, __FILENAME__, __FUNCTION__})
+#define ERROR stafseasq::log::LogBuffer::Properties({\
+	stafseasq::log::error, __LINE__, __FILENAME__, __FUNCTION__})
 #endif
 
 namespace stafseasq {
@@ -30,6 +39,11 @@ enum Level {
 	error, warning, info, debug
 };
 
+/*
+ * SAMRAI already has a nice parallelized Streambuffer. So we use what we
+ * get! Look into ParallelBuffers Doc for details. We just add some filtering
+ * and formatted output.
+ */
 class LogBuffer: public SAMRAI::tbox::ParallelBuffer {
 public:
 

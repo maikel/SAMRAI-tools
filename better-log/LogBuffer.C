@@ -8,20 +8,30 @@
 namespace stafseasq {
 namespace log {
 
+/*
+ * Default constructor and destructors...
+ */
 LogBuffer::LogBuffer() :
 		d_has_prefix(false),
 		d_has_colors(false) {
 }
-
 LogBuffer::~LogBuffer() {
 }
 
+/*
+ * Use the property structure as stream modifier. DANGER!
+ * We do a static_cast which can fail if we dont use it on the right thing.
+ */
 std::ostream &operator<<(std::ostream &os, const LogBuffer::Properties &props) {
 	LogBuffer *buffer = static_cast<LogBuffer *>(os.rdbuf());
 	buffer->setProperties(props);
 	return os;
 }
 
+/*
+ * Set properties and do some logic. Check Settings and to print colors or
+ * not.
+ */
 void LogBuffer::setProperties(const Properties &properties) {
 	d_properties = properties;
 	if (d_has_prefix) {
@@ -55,6 +65,9 @@ void LogBuffer::setProperties(const Properties &properties) {
 	}
 }
 
+/*
+ * Just set prefix and color attributes and update your prefix, if needed.
+ */
 void LogBuffer::setPrefixOnOff(bool onoff) {
 	d_has_prefix = onoff;
 	if (!onoff) {
@@ -63,9 +76,14 @@ void LogBuffer::setPrefixOnOff(bool onoff) {
 		setProperties(d_properties);
 	}
 }
-
+/*
+ * only the master process prints to a terminal. the rest goes into a file
+ * TODO: the master actually gets mirrored in a file too. change the buffer
+ * directly to remove the escape codes.
+ */
 void LogBuffer::setColorOnOff(bool onoff) {
-	d_has_colors = onoff;
+	int rank = SAMRAI::tbox::SAMRAI_MPI::getSAMRAIWorld().getRank();
+	d_has_colors = onoff && (rank == 0);
 	if (d_has_prefix) {
 		setProperties(d_properties);
 	}
