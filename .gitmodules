@@ -1,0 +1,3 @@
+[submodule "SAMRAI-logger"]
+	path = SAMRAI-logger
+	url = git@github.com:maikel/SAMRAI-logger.git
