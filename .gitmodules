@@ -1,3 +1,6 @@
 [submodule "SAMRAI-logger"]
 	path = STAFSEAsq-logger
 	url = git@github.com:maikel/SAMRAI-logger.git
+[submodule "STAFSEAsq-TwoCircles"]
+	path = STAFSEAsq-TwoCircles
+	url = git@github.com:maikel/STAFSEAsq-TwoCircles.git
